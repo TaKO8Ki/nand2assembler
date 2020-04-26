@@ -18,10 +18,9 @@ pub struct Parser {
     pub command_type: Option<i32>,
 }
 
-pub fn parse(file_name: &str) -> io::Result<(Parser)> {
+pub fn parse(file_name: &str) -> io::Result<Parser> {
     let f = File::open(file_name)?;
     let f = BufReader::new(f);
-    let mut buf = String::new();
 
     let node = Parser {
         stream: f,
@@ -29,7 +28,7 @@ pub fn parse(file_name: &str) -> io::Result<(Parser)> {
         command_type: None,
     };
 
-    Ok((node))
+    Ok(node)
 }
 
 impl Parser {
