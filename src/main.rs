@@ -15,11 +15,11 @@ fn main() {
             println!("line: {}", node.now_line);
             match node.command_type() {
                 Some(command_type) => println!("type: {}", command_type),
-                None => (),
+                None => println!("command_type does not exist"),
             }
             match node.symbol() {
                 Some(symbol) => println!("symbol: {}", symbol),
-                None => (),
+                None => println!("symbol does not exist"),
             }
         },
         Err(err) => println!("Error: {:?}", err),
