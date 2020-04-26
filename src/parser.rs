@@ -69,11 +69,53 @@ impl Parser {
         None
     }
 
-    pub fn dest(&self) {}
+    pub fn dest(&self) -> Option<String> {
+        if self.command_type != Some(2) {
+            return None;
+        }
+        let re = Regex::new(C_COMMAND_REGEX).unwrap();
+        let caps = re.captures(&self.now_line).unwrap();
+        if caps.at(2) != None {
+            return Some(caps.at(2).unwrap().to_string());
+        }
+        None
+    }
 
-    pub fn comp(&self) {}
+    pub fn comp(&self) -> Option<String> {
+        if self.command_type != Some(2) {
+            return None;
+        }
+        let re = Regex::new(C_COMMAND_REGEX).unwrap();
+        let caps = re.captures(&self.now_line).unwrap();
+        let first = if caps.at(3) == None {
+            "".to_string()
+        } else {
+            caps.at(3).unwrap().to_string()
+        };
+        let second = if caps.at(4) == None {
+            "".to_string()
+        } else {
+            caps.at(4).unwrap().to_string()
+        };
+        let third = if caps.at(5) == None {
+            "".to_string()
+        } else {
+            caps.at(5).unwrap().to_string()
+        };
+        Some(format!("{}{}{}", first, second, third))
+    }
 
-    pub fn jump(&self) {}
+    pub fn jump(&self) -> Option<String> {
+        if self.command_type != Some(2) {
+            return None;
+        }
+        let re = Regex::new(C_COMMAND_REGEX).unwrap();
+        let caps = re.captures(&self.now_line).unwrap();
+        if caps.at(7) != None {
+            return Some(caps.at(7).unwrap().to_string());
+        }
+        None
+    }
 
     fn a_command(&self) -> bool {
         let re = Regex::new(A_COMMAND_REGEX).unwrap();
