@@ -8,3 +8,6 @@ edition = "2018"
 
 [dependencies]
 regex = "0.1"
+
+[dependencies.lazy_static]
+git = "https://github.com/Kimundi/lazy-static.rs"
