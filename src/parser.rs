@@ -109,11 +109,17 @@ impl Parser {
         if self.command_type != Some(2) {
             return None;
         }
-        let re = Regex::new(C_COMMAND_REGEX).unwrap();
-        let caps = re.captures(&self.now_line).unwrap();
-        if caps.at(7) != None {
-            return Some(caps.at(7).unwrap().to_string());
+        let re = Regex::new(L_COMMAND_REGEX).unwrap();
+        let caps = re.captures(&self.now_line);
+        match caps {
+            Some(caps) => {
+                if caps.at(7) != None {
+                    return Some(caps.at(7).unwrap().to_string());
+                }
+            }
+            None => return None,
         }
+
         None
     }
 
