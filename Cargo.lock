@@ -20,6 +20,11 @@ dependencies = [
 ]
 
 [[package]]
+name = "lazy_static"
+version = "1.4.0"
+source = "git+https://github.com/Kimundi/lazy-static.rs#746a0f02a84441157ca504c8679aba5c8269a9d0"
+
+[[package]]
 name = "libc"
 version = "0.2.69"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -38,6 +43,7 @@ dependencies = [
 name = "nand2assembly"
 version = "0.1.0"
 dependencies = [
+ "lazy_static",
  "regex",
 ]
 
