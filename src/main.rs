@@ -1,3 +1,4 @@
+use nand2assembly::code;
 use nand2assembly::parser;
 use std::env;
 
@@ -23,31 +24,33 @@ fn main() {
                 Some(symbol) => {
                     let address: usize = symbol.parse().unwrap();
                     let formatted_address = format!("{:0>1$b}", address, 16);
-                    println!("symbol: {}, address: {}", symbol, formatted_address);
+                    println!("symbol: {}", symbol);
+                    println!("a_address: {}", formatted_address)
                 }
-                None => println!("symbol does not exist"),
+                None => (),
             }
 
-            match node.dest() {
-                Some(dest) => println!("dest: {}", dest),
-                None => println!("dest does not exist"),
-            }
-
-            match node.comp() {
-                Some(comp) => println!("comp {}", comp),
-                None => println!("comp does not exist"),
-            }
-
-            match node.jump() {
-                Some(jump) => println!("jump {}", jump),
-                None => println!("jump does not exist"),
+            let dest = if node.dest() != None {
+                code::dest(node.dest().unwrap())
+            } else {
+                code::dest("".to_string())
+            };
+            let comp = if node.comp() != None {
+                code::comp(node.comp().unwrap())
+            } else {
+                code::comp("".to_string())
+            };
+            let jump = if node.jump() != None {
+                code::jump(node.comp().unwrap())
+            } else {
+                code::jump("".to_string())
+            };
+            if node.symbol() == None {
+                println!("c_address: 111{}{}{}", comp, dest, jump);
             }
 
             println!("")
         },
         Err(err) => println!("Error: {:?}", err),
     };
-    let hoge: usize = "100".parse().unwrap();
-    let test = format!("{:0>1$b}", hoge, 16);
-    println!("{}", test);
 }
