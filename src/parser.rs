@@ -52,7 +52,7 @@ pub fn parse(f: BufReader<std::fs::File>) -> io::Result<Vec<String>> {
             code::comp("".to_string())
         };
         let jump = if node.jump() != None {
-            code::jump(node.comp().unwrap())
+            code::jump(node.jump().unwrap())
         } else {
             code::jump("".to_string())
         };
@@ -144,7 +144,7 @@ impl Parser {
         if self.command_type != Some(2) {
             return None;
         }
-        let re = Regex::new(L_COMMAND_REGEX).unwrap();
+        let re = Regex::new(C_COMMAND_REGEX).unwrap();
         let caps = re.captures(&self.now_line);
         match caps {
             Some(caps) => {
