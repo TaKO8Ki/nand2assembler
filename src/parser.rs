@@ -1,5 +1,5 @@
+use crate::code;
 use regex::Regex;
-use std::fs::File;
 use std::io::prelude::*;
 use std::io::{self, BufReader};
 
@@ -13,22 +13,56 @@ const C_COMMAND_REGEX: &str =
 const L_COMMAND_REGEX: &str = r"^\((.+)\)$";
 
 pub struct Parser {
-    pub stream: std::io::BufReader<std::fs::File>,
+    pub stream: BufReader<std::fs::File>,
     pub now_line: String,
     pub command_type: Option<i32>,
 }
 
-pub fn parse(file_name: &str) -> io::Result<Parser> {
-    let f = File::open(file_name)?;
-    let f = BufReader::new(f);
-
-    let node = Parser {
+pub fn parse(f: BufReader<std::fs::File>) -> io::Result<Vec<String>> {
+    let mut addresses: Vec<String> = Vec::new();
+    let mut node = Parser {
         stream: f,
         now_line: "\n".to_string(),
         command_type: None,
     };
 
-    Ok(node)
+    loop {
+        node.advance();
+        if !node.has_more_commands() {
+            break;
+        }
+
+        match node.symbol() {
+            Some(symbol) => {
+                let address: usize = symbol.parse().unwrap();
+                let formatted_address = format!("{:0>1$b}", address, 16);
+                addresses.push(formatted_address)
+            }
+            None => (),
+        }
+
+        let dest = if node.dest() != None {
+            code::dest(node.dest().unwrap())
+        } else {
+            code::dest("".to_string())
+        };
+        let comp = if node.comp() != None {
+            code::comp(node.comp().unwrap())
+        } else {
+            code::comp("".to_string())
+        };
+        let jump = if node.jump() != None {
+            code::jump(node.comp().unwrap())
+        } else {
+            code::jump("".to_string())
+        };
+        if node.symbol() == None {
+            let c_address = format!("111{}{}{}", comp, dest, jump);
+            addresses.push(c_address);
+        }
+    }
+
+    Ok(addresses)
 }
 
 impl Parser {
@@ -38,7 +72,8 @@ impl Parser {
             .read_line(&mut buf)
             .expect("reading from cursor won't fail")
             .to_string();
-        self.now_line = formatted(buf)
+        self.now_line = formatted(buf);
+        self.command_type().unwrap();
     }
 
     pub fn has_more_commands(&self) -> bool {
