@@ -22,14 +22,19 @@ pub fn parse(f: BufReader<std::fs::File>) -> io::Result<Vec<String>> {
     let mut addresses: Vec<String> = Vec::new();
     let mut node = Parser {
         stream: f,
-        now_line: "\n".to_string(),
+        now_line: "".to_string(),
         command_type: None,
     };
 
     loop {
-        node.advance();
-        if !node.has_more_commands() {
+        let bytes = node.advance();
+
+        if bytes == 0 {
             break;
+        }
+
+        if !node.has_more_commands() {
+            continue;
         }
 
         match node.symbol() {
@@ -66,14 +71,15 @@ pub fn parse(f: BufReader<std::fs::File>) -> io::Result<Vec<String>> {
 }
 
 impl Parser {
-    pub fn advance(&mut self) {
+    pub fn advance(&mut self) -> usize {
         let mut buf = String::new();
-        self.stream
-            .read_line(&mut buf)
-            .expect("reading from cursor won't fail")
-            .to_string();
+        let bytes = self.stream.read_line(&mut buf).unwrap();
         self.now_line = formatted(buf);
-        self.command_type().unwrap();
+        match self.command_type() {
+            Some(_) => (),
+            None => (),
+        }
+        return bytes;
     }
 
     pub fn has_more_commands(&self) -> bool {
