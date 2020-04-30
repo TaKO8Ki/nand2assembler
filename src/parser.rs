@@ -142,7 +142,7 @@ fn formatted(str: String) -> String {
 }
 
 mod test {
-    use std::fs::{self, File};
+    use std::fs::File;
     use std::io::BufReader;
 
     #[test]
