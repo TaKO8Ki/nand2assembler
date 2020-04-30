@@ -43,10 +43,7 @@ impl SymbolTable {
 
     pub fn contains(&self, key: String) -> bool {
         let key: &str = &key;
-        match self.symbol_addresses.get(key) {
-            Some(_) => true,
-            None => false,
-        }
+        self.symbol_addresses.get(key).is_some()
     }
 
     pub fn get_address(&self, key: String) -> Option<String> {

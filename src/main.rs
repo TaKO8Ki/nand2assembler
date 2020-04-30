@@ -25,19 +25,16 @@ fn main() {
             continue;
         }
 
-        match parser.symbol() {
-            Some(symbol) => {
-                match symbol.clone().parse::<u32>() {
-                    Ok(_) => (),
-                    Err(_) => {
-                        if parser.l_command() && !symbol_table.contains(symbol.clone()) {
-                            let value = format!("{:0>1$b}", symbol_table.l_variable_address, 16);
-                            symbol_table.add_entry(symbol.clone(), value);
-                        }
+        if let Some(symbol) = parser.symbol() {
+            match symbol.clone().parse::<u32>() {
+                Ok(_) => (),
+                Err(_) => {
+                    if parser.l_command() && !symbol_table.contains(symbol.clone()) {
+                        let value = format!("{:0>1$b}", symbol_table.l_variable_address, 16);
+                        symbol_table.add_entry(symbol.clone(), value);
                     }
-                };
+                }
             }
-            None => (),
         }
 
         if parser.a_command() || parser.c_command() {
@@ -61,23 +58,19 @@ fn main() {
             continue;
         }
 
-        match parser.symbol() {
-            Some(symbol) => {
-                match symbol.clone().parse::<u32>() {
-                    Ok(symbol) => addresses.push(format!("{:0>1$b}", symbol, 16)),
-                    Err(_) => {
-                        if parser.a_command() && symbol_table.contains(symbol.clone()) {
-                            addresses.push(symbol_table.get_address(symbol.clone()).unwrap());
-                        } else if !parser.l_command() {
-                            addresses.push(format!("{:0>1$b}", a_address, 16));
-                            symbol_table
-                                .add_entry(symbol.clone(), format!("{:0>1$b}", a_address, 16));
-                            a_address += 1;
-                        }
+        if let Some(symbol) = parser.symbol() {
+            match symbol.clone().parse::<u32>() {
+                Ok(symbol) => addresses.push(format!("{:0>1$b}", symbol, 16)),
+                Err(_) => {
+                    if parser.a_command() && symbol_table.contains(symbol.clone()) {
+                        addresses.push(symbol_table.get_address(symbol.clone()).unwrap());
+                    } else if !parser.l_command() {
+                        addresses.push(format!("{:0>1$b}", a_address, 16));
+                        symbol_table.add_entry(symbol.clone(), format!("{:0>1$b}", a_address, 16));
+                        a_address += 1;
                     }
-                };
-            }
-            None => (),
+                }
+            };
         }
 
         let dest = code::dest(parser.dest());

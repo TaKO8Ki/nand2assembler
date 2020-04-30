@@ -63,7 +63,7 @@ pub fn dest(mnemonic: Option<String>) -> String {
         None => "null".to_string(),
     };
     let key: &str = &dest_mnemonic;
-    DEST_MAP.get(key).unwrap().to_string()
+    (*(DEST_MAP.get(key).unwrap())).to_string()
 }
 
 pub fn comp(mnemonic: Option<String>) -> String {
@@ -73,8 +73,8 @@ pub fn comp(mnemonic: Option<String>) -> String {
     };
     let key: &str = &comp_mnemonic;
     match COMP_MAP.get(key) {
-        Some(num) => return num.to_string(),
-        None => return "".to_string(),
+        Some(num) => (*num).to_string(),
+        None => "".to_string(),
     }
 }
 
@@ -84,5 +84,5 @@ pub fn jump(mnemonic: Option<String>) -> String {
         None => "null".to_string(),
     };
     let key: &str = &jump_mnemonic;
-    JUMP_MAP.get(key).unwrap().to_string()
+    (*JUMP_MAP.get(key).unwrap()).to_string()
 }

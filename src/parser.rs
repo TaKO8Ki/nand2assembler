@@ -1,8 +1,6 @@
-use crate::code;
-use crate::symbol_table;
 use regex::Regex;
 use std::io::prelude::*;
-use std::io::{self, BufReader};
+use std::io::BufReader;
 
 const A_COMMAND: i32 = 1;
 const C_COMMAND: i32 = 2;
@@ -32,11 +30,8 @@ impl Parser {
         let mut buf = String::new();
         let bytes = self.stream.read_line(&mut buf).unwrap();
         self.now_line = formatted(buf);
-        match self.command_type() {
-            Some(_) => (),
-            None => (),
-        }
-        return bytes;
+        if let Some(_) = self.command_type() {}
+        bytes
     }
 
     pub fn has_more_commands(&self) -> bool {
