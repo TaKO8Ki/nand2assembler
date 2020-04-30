@@ -1,4 +1,5 @@
 use crate::code;
+use crate::symbol_table;
 use regex::Regex;
 use std::io::prelude::*;
 use std::io::{self, BufReader};
@@ -18,59 +19,15 @@ pub struct Parser {
     pub command_type: Option<i32>,
 }
 
-pub fn parse(f: BufReader<std::fs::File>) -> io::Result<Vec<String>> {
-    let mut addresses: Vec<String> = Vec::new();
-    let mut node = Parser {
-        stream: f,
-        now_line: "".to_string(),
-        command_type: None,
-    };
-
-    loop {
-        let bytes = node.advance();
-
-        if bytes == 0 {
-            break;
-        }
-
-        if !node.has_more_commands() {
-            continue;
-        }
-
-        match node.symbol() {
-            Some(symbol) => {
-                let address: usize = symbol.parse().unwrap();
-                let formatted_address = format!("{:0>1$b}", address, 16);
-                addresses.push(formatted_address)
-            }
-            None => (),
-        }
-
-        let dest = if node.dest() != None {
-            code::dest(node.dest().unwrap())
-        } else {
-            code::dest("".to_string())
-        };
-        let comp = if node.comp() != None {
-            code::comp(node.comp().unwrap())
-        } else {
-            code::comp("".to_string())
-        };
-        let jump = if node.jump() != None {
-            code::jump(node.jump().unwrap())
-        } else {
-            code::jump("".to_string())
-        };
-        if node.symbol() == None {
-            let c_address = format!("111{}{}{}", comp, dest, jump);
-            addresses.push(c_address);
+impl Parser {
+    pub fn new(f: BufReader<std::fs::File>) -> Parser {
+        Parser {
+            stream: f,
+            now_line: "".to_string(),
+            command_type: None,
         }
     }
 
-    Ok(addresses)
-}
-
-impl Parser {
     pub fn advance(&mut self) -> usize {
         let mut buf = String::new();
         let bytes = self.stream.read_line(&mut buf).unwrap();
@@ -164,17 +121,17 @@ impl Parser {
         None
     }
 
-    fn a_command(&self) -> bool {
+    pub fn a_command(&self) -> bool {
         let re = Regex::new(A_COMMAND_REGEX).unwrap();
         re.is_match(&self.now_line)
     }
 
-    fn c_command(&self) -> bool {
+    pub fn c_command(&self) -> bool {
         let re = Regex::new(C_COMMAND_REGEX).unwrap();
         re.is_match(&self.now_line)
     }
 
-    fn l_command(&self) -> bool {
+    pub fn l_command(&self) -> bool {
         let re = Regex::new(L_COMMAND_REGEX).unwrap();
         re.is_match(&self.now_line)
     }
