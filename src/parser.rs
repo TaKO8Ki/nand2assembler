@@ -1,12 +1,10 @@
-use crate::code;
-use crate::symbol_table;
 use regex::Regex;
 use std::io::prelude::*;
-use std::io::{self, BufReader};
+use std::io::BufReader;
 
-const A_COMMAND: i32 = 1;
-const C_COMMAND: i32 = 2;
-const L_COMMAND: i32 = 3;
+const A_COMMAND: u32 = 1;
+const C_COMMAND: u32 = 2;
+const L_COMMAND: u32 = 3;
 
 const A_COMMAND_REGEX: &str = r"^@(.+)$";
 const C_COMMAND_REGEX: &str =
@@ -16,7 +14,7 @@ const L_COMMAND_REGEX: &str = r"^\((.+)\)$";
 pub struct Parser {
     pub stream: BufReader<std::fs::File>,
     pub now_line: String,
-    pub command_type: Option<i32>,
+    pub command_type: Option<u32>,
 }
 
 impl Parser {
@@ -32,26 +30,24 @@ impl Parser {
         let mut buf = String::new();
         let bytes = self.stream.read_line(&mut buf).unwrap();
         self.now_line = formatted(buf);
-        match self.command_type() {
-            Some(_) => (),
-            None => (),
-        }
-        return bytes;
+        self.command_type = self.command_type();
+        bytes
     }
 
     pub fn has_more_commands(&self) -> bool {
         self.now_line != ""
     }
 
-    pub fn command_type(&mut self) -> Option<i32> {
+    pub fn command_type(&mut self) -> Option<u32> {
         if self.a_command() {
-            self.command_type = Some(A_COMMAND);
+            Some(A_COMMAND)
         } else if self.c_command() {
-            self.command_type = Some(C_COMMAND);
+            Some(C_COMMAND)
         } else if self.l_command() {
-            self.command_type = Some(L_COMMAND);
+            Some(L_COMMAND)
+        } else {
+            None
         }
-        self.command_type
     }
 
     pub fn symbol(&self) -> Option<String> {
@@ -143,4 +139,38 @@ fn formatted(str: String) -> String {
         .replace_all(&str, "")
         .replace("\n", "")
         .replace(" ", "")
+}
+
+mod test {
+    use std::fs::File;
+    use std::io::BufReader;
+
+    // TODO tempfile使って再実装する
+    // https://docs.rs/tempfile/3.0.4/tempfile/fn.tempdir.html
+
+    #[test]
+    fn test_advance() {
+        let f = File::open("test/Test.asm").unwrap();
+        let f = BufReader::new(f);
+        let mut parser = super::Parser {
+            stream: f,
+            now_line: "".to_string(),
+            command_type: None,
+        };
+        parser.advance();
+        assert_eq!(parser.now_line, "@0");
+        assert_eq!(parser.command_type.unwrap(), 1);
+    }
+
+    #[test]
+    fn test_has_more_commands() {
+        let f = File::open("test/Test.asm").unwrap();
+        let f = BufReader::new(f);
+        let parser = super::Parser {
+            stream: f,
+            now_line: "@aiueo".to_string(),
+            command_type: None,
+        };
+        assert_eq!(parser.has_more_commands(), true);
+    }
 }
