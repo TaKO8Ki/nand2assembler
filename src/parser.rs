@@ -2,9 +2,9 @@ use regex::Regex;
 use std::io::prelude::*;
 use std::io::BufReader;
 
-const A_COMMAND: i32 = 1;
-const C_COMMAND: i32 = 2;
-const L_COMMAND: i32 = 3;
+const A_COMMAND: u32 = 1;
+const C_COMMAND: u32 = 2;
+const L_COMMAND: u32 = 3;
 
 const A_COMMAND_REGEX: &str = r"^@(.+)$";
 const C_COMMAND_REGEX: &str =
@@ -14,7 +14,7 @@ const L_COMMAND_REGEX: &str = r"^\((.+)\)$";
 pub struct Parser {
     pub stream: BufReader<std::fs::File>,
     pub now_line: String,
-    pub command_type: Option<i32>,
+    pub command_type: Option<u32>,
 }
 
 impl Parser {
@@ -30,7 +30,7 @@ impl Parser {
         let mut buf = String::new();
         let bytes = self.stream.read_line(&mut buf).unwrap();
         self.now_line = formatted(buf);
-        self.command_type();
+        self.command_type = self.command_type();
         bytes
     }
 
@@ -38,13 +38,15 @@ impl Parser {
         self.now_line != ""
     }
 
-    pub fn command_type(&mut self) {
+    pub fn command_type(&mut self) -> Option<u32> {
         if self.a_command() {
-            self.command_type = Some(A_COMMAND);
+            Some(A_COMMAND)
         } else if self.c_command() {
-            self.command_type = Some(C_COMMAND);
+            Some(C_COMMAND)
         } else if self.l_command() {
-            self.command_type = Some(L_COMMAND);
+            Some(L_COMMAND)
+        } else {
+            None
         }
     }
 
