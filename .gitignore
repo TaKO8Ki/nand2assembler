@@ -2,3 +2,4 @@
 *.txt
 *.asm
 *.hack
+!Sample.hack
