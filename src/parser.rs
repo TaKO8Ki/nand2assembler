@@ -30,7 +30,7 @@ impl Parser {
         let mut buf = String::new();
         let bytes = self.stream.read_line(&mut buf).unwrap();
         self.now_line = formatted(buf);
-        if let Some(_) = self.command_type() {}
+        self.command_type();
         bytes
     }
 
@@ -38,7 +38,7 @@ impl Parser {
         self.now_line != ""
     }
 
-    pub fn command_type(&mut self) -> Option<i32> {
+    pub fn command_type(&mut self) {
         if self.a_command() {
             self.command_type = Some(A_COMMAND);
         } else if self.c_command() {
@@ -46,7 +46,6 @@ impl Parser {
         } else if self.l_command() {
             self.command_type = Some(L_COMMAND);
         }
-        self.command_type
     }
 
     pub fn symbol(&self) -> Option<String> {
