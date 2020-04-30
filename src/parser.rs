@@ -140,3 +140,34 @@ fn formatted(str: String) -> String {
         .replace("\n", "")
         .replace(" ", "")
 }
+
+mod test {
+    use std::fs::{self, File};
+    use std::io::BufReader;
+
+    #[test]
+    fn test_advance() {
+        let f = File::open("test/Test.asm").unwrap();
+        let f = BufReader::new(f);
+        let mut parser = super::Parser {
+            stream: f,
+            now_line: "".to_string(),
+            command_type: None,
+        };
+        parser.advance();
+        assert_eq!(parser.now_line, "@0");
+        assert_eq!(parser.command_type.unwrap(), 1);
+    }
+
+    #[test]
+    fn test_has_more_commands() {
+        let f = File::open("test/Test.asm").unwrap();
+        let f = BufReader::new(f);
+        let parser = super::Parser {
+            stream: f,
+            now_line: "@aiueo".to_string(),
+            command_type: None,
+        };
+        assert_eq!(parser.has_more_commands(), true);
+    }
+}
