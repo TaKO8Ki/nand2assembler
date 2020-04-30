@@ -145,6 +145,9 @@ mod test {
     use std::fs::File;
     use std::io::BufReader;
 
+    // TODO tempfile使って再実装する
+    // https://docs.rs/tempfile/3.0.4/tempfile/fn.tempdir.html
+
     #[test]
     fn test_advance() {
         let f = File::open("test/Test.asm").unwrap();
