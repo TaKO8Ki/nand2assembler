@@ -2,7 +2,7 @@
 
 ## Usage
 
-```rust
+```sh
 $ cargo run Xxx.asm
-// then you can see Xxx.hack in tmp dir.
+# then you can see Xxx.hack in tmp dir.
 ```
