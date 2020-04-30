@@ -57,26 +57,32 @@ lazy_static! {
     };
 }
 
-pub fn dest(str: String) -> String {
-    let dest_mnemonic: &str = &str;
-    match DEST_MAP.get(dest_mnemonic) {
-        Some(num) => return num.to_string(),
-        None => return DEST_MAP.get("null").unwrap().to_string(),
-    }
+pub fn dest(mnemonic: Option<String>) -> String {
+    let dest_mnemonic = match mnemonic {
+        Some(mn) => mn,
+        None => "null".to_string(),
+    };
+    let key: &str = &dest_mnemonic;
+    DEST_MAP.get(key).unwrap().to_string()
 }
 
-pub fn comp(str: String) -> String {
-    let comp_mnemonic: &str = &str;
-    match COMP_MAP.get(comp_mnemonic) {
+pub fn comp(mnemonic: Option<String>) -> String {
+    let comp_mnemonic = match mnemonic {
+        Some(mn) => mn,
+        None => "".to_string(),
+    };
+    let key: &str = &comp_mnemonic;
+    match COMP_MAP.get(key) {
         Some(num) => return num.to_string(),
         None => return "".to_string(),
     }
 }
 
-pub fn jump(str: String) -> String {
-    let jump_mnemonic: &str = &str;
-    match JUMP_MAP.get(jump_mnemonic) {
-        Some(num) => return num.to_string(),
-        None => return JUMP_MAP.get("null").unwrap().to_string(),
-    }
+pub fn jump(mnemonic: Option<String>) -> String {
+    let jump_mnemonic = match mnemonic {
+        Some(mn) => mn,
+        None => "null".to_string(),
+    };
+    let key: &str = &jump_mnemonic;
+    JUMP_MAP.get(key).unwrap().to_string()
 }
