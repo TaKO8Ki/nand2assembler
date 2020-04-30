@@ -3,3 +3,4 @@
 *.asm
 *.hack
 !Sample.hack
+!Test.asm
